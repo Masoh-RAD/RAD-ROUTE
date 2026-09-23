@@ -12,7 +12,6 @@ FACILITY_RESOURCES = {
     "Facility C": ["X-ray", "MRI", "Mammography", "Nuclear Medicine"],
 }
 
-# ---------- Styling ----------
 st.markdown(
     """
     <style>
@@ -38,13 +37,6 @@ st.markdown(
         color: #52606d;
     }
 
-    .section-card {
-        padding: 1rem;
-        border-radius: 12px;
-        border: 1px solid #e1e8ed;
-        margin-bottom: 1rem;
-    }
-
     .small-note {
         font-size: 0.9rem;
         color: #52606d;
@@ -54,7 +46,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ---------- Header ----------
 st.markdown(
     """
     <div class="hero">
@@ -76,7 +67,6 @@ st.info(
     "⚕️ AI-assisted decision support — professional review required."
 )
 
-# ---------- Referral Information ----------
 st.header("1. Referral Information")
 
 age = st.number_input(
@@ -124,7 +114,6 @@ if "analysis" not in st.session_state:
 if "decision" not in st.session_state:
     st.session_state.decision = None
 
-# ---------- Analysis ----------
 if st.button("🔎 Analyze Referral", type="primary"):
 
     missing = []
@@ -195,8 +184,6 @@ if st.button("🔎 Analyze Referral", type="primary"):
 
     st.session_state.decision = None
 
-
-# ---------- Results ----------
 if st.session_state.analysis:
 
     result = st.session_state.analysis
@@ -248,8 +235,6 @@ RAD-ROUTE RESOURCE ASSESSMENT
 -----------------------------
 {result["routing"]}
 
-AI-assisted recommendation — professional review required.
-
 PROFESSIONAL DECISION
 ---------------------
 APPROVED
@@ -281,7 +266,6 @@ healthcare professional.
                 "or review the referral before proceeding."
             )
 
-# ---------- Footer ----------
 st.divider()
 
 st.caption(
