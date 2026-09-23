@@ -8,21 +8,75 @@ st.set_page_config(
 
 FACILITY_RESOURCES = {
     "Facility A": ["X-ray"],
-    "Facility B": ["X-ray", "CT", "Ultrasound",],
+    "Facility B": ["X-ray", "CT", "Ultrasound"],
     "Facility C": ["X-ray", "MRI", "Mammography", "Nuclear Medicine"],
 }
 
-st.title("RAD-ROUTE")
-st.subheader("Resource-Aware AI-Assisted Imaging Referral & Routing")
+# ---------- Styling ----------
+st.markdown(
+    """
+    <style>
+    .main {
+        max-width: 900px;
+        margin: auto;
+    }
 
-st.info(
-    "Demonstration prototype — synthetic cases only.\n\n"
-    "RAD-ROUTE supports healthcare professionals by checking referral "
-    "completeness and matching imaging requirements with configured "
-    "facility capabilities.\n\n"
-    "AI-assisted decision support — professional approval required."
+    .hero {
+        padding: 1.2rem 1.3rem;
+        border-radius: 14px;
+        border: 1px solid #d9e2ec;
+        background: linear-gradient(135deg, #f7fbff, #eef5fa);
+        margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+        margin-bottom: 0.2rem;
+    }
+
+    .hero p {
+        margin-top: 0.2rem;
+        color: #52606d;
+    }
+
+    .section-card {
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid #e1e8ed;
+        margin-bottom: 1rem;
+    }
+
+    .small-note {
+        font-size: 0.9rem;
+        color: #52606d;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
+# ---------- Header ----------
+st.markdown(
+    """
+    <div class="hero">
+        <h1>🩻 RAD-ROUTE</h1>
+        <p><strong>Resource-Aware AI-Assisted Imaging Referral & Routing</strong></p>
+        <p class="small-note">
+        Supporting healthcare professionals with referral completeness
+        checking and resource-aware imaging routing.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.info(
+    "🧪 Demonstration prototype — synthetic cases only.\n\n"
+    "RAD-ROUTE checks referral information and compares requested imaging "
+    "with configured facility capabilities.\n\n"
+    "⚕️ AI-assisted decision support — professional review required."
+)
+
+# ---------- Referral Information ----------
 st.header("1. Referral Information")
 
 age = st.number_input(
@@ -44,7 +98,14 @@ clinical_question = st.text_input(
 
 imaging = st.selectbox(
     "Requested Imaging",
-    ["X-ray", "CT", "MRI", "Nuclear Medicine", "Ultrasound", "Mammography"]
+    [
+        "X-ray",
+        "CT",
+        "MRI",
+        "Nuclear Medicine",
+        "Ultrasound",
+        "Mammography"
+    ]
 )
 
 facility = st.selectbox(
@@ -63,7 +124,8 @@ if "analysis" not in st.session_state:
 if "decision" not in st.session_state:
     st.session_state.decision = None
 
-if st.button("Analyze Referral", type="primary"):
+# ---------- Analysis ----------
+if st.button("🔎 Analyze Referral", type="primary"):
 
     missing = []
 
@@ -83,27 +145,36 @@ if st.button("Analyze Referral", type="primary"):
 
     else:
         readiness = "READY FOR REVIEW"
-        information = "No essential referral information identified as missing."
+        information = (
+            "No essential referral information identified as missing."
+        )
 
         if imaging in FACILITY_RESOURCES[facility]:
+
             routing = (
-                f"{facility} has {imaging} capability.\n\n"
+                f"✅ {facility} has {imaging} capability.\n\n"
                 "Referral can proceed to professional review."
             )
+
         else:
+
             alternatives = [
-                name for name, resources in FACILITY_RESOURCES.items()
+                name
+                for name, resources in FACILITY_RESOURCES.items()
                 if imaging in resources
             ]
 
             if alternatives:
                 suggested = alternatives[0]
+
                 routing = (
                     f"⚠️ {facility} does not have {imaging} capability.\n\n"
                     f"Suggested pathway: {suggested}\n\n"
                     "AI-assisted recommendation — professional review required."
                 )
+
             else:
+
                 routing = (
                     f"⚠️ {facility} does not have {imaging} capability.\n\n"
                     "No configured alternative facility was identified.\n\n"
@@ -125,6 +196,7 @@ if st.button("Analyze Referral", type="primary"):
     st.session_state.decision = None
 
 
+# ---------- Results ----------
 if st.session_state.analysis:
 
     result = st.session_state.analysis
@@ -132,13 +204,21 @@ if st.session_state.analysis:
     st.header("2. RAD-ROUTE Analysis")
 
     st.write("**Referral Readiness**")
-    st.success(result["readiness"])
+
+    if result["readiness"] == "READY FOR REVIEW":
+        st.success(result["readiness"])
+    else:
+        st.error(result["readiness"])
 
     st.write("**Information Check**")
     st.write(result["information"])
 
     st.write("**Resource-Aware Routing**")
-    st.warning(result["routing"])
+
+    if "does not have" in result["routing"]:
+        st.warning(result["routing"])
+    else:
+        st.success(result["routing"])
 
     st.header("3. Professional Review")
 
@@ -147,7 +227,7 @@ if st.session_state.analysis:
         ["Approved", "Edit / Do Not Approve"]
     )
 
-    if st.button("Generate Structured Referral"):
+    if st.button("📄 Generate Structured Referral"):
 
         if decision == "Approved":
 
@@ -164,32 +244,51 @@ Requested imaging: {result["imaging"]}
 Urgency: {result["urgency"]}
 Referring facility: {result["facility"]}
 
-RAD-ROUTE resource assessment:
+RAD-ROUTE RESOURCE ASSESSMENT
+-----------------------------
 {result["routing"]}
 
 AI-assisted recommendation — professional review required.
 
-Professional decision:
+PROFESSIONAL DECISION
+---------------------
 APPROVED
 
-Status:
+STATUS
+------
 READY FOR TRANSFER TO EXISTING REFERRAL WORKFLOW
 
-Note:
+NOTE
+----
 RAD-ROUTE is an AI-assisted decision-support prototype.
-Final clinical responsibility remains with the authorized healthcare professional.
+Final clinical responsibility remains with the authorized
+healthcare professional.
 """
 
-            st.header("Structured Referral Output")
+            st.header("4. Structured Referral Output")
+
             st.code(structured)
 
-        else:
-            st.warning(
-                "Referral not approved. The professional should edit or "
-                "review the referral before proceeding."
+            st.success(
+                "Referral structured successfully and is ready "
+                "for transfer to the existing referral workflow."
             )
 
+        else:
+
+            st.warning(
+                "Referral not approved. The professional should edit "
+                "or review the referral before proceeding."
+            )
+
+# ---------- Footer ----------
+st.divider()
+
 st.caption(
-    "RAD-ROUTE is an AI-assisted decision-support prototype. "
-    "Final clinical responsibility remains with the authorized healthcare professional."
+    "RAD-ROUTE • Demonstration prototype • Synthetic cases only"
+)
+
+st.caption(
+    "AI-assisted decision support. Final clinical responsibility "
+    "remains with the authorized healthcare professional."
 )
